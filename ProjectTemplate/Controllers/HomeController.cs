@@ -11,7 +11,7 @@ using System.Web.Mvc;
 
 namespace ProjectTemplate.Controllers
 {
-    public class HomeController :Controller
+    public class HomeController : Controller
     {
         public ActionResult Index()
         {
@@ -132,7 +132,7 @@ namespace ProjectTemplate.Controllers
         [HttpPost]
         public ActionResult EmpData(EmployeeData empDetail)
         {
-            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);            
+            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);
             try
             {
                 SqlCommand cmd = new SqlCommand("insert into Employee values(@FirstName, @LastName, @Address, @MobileNo, @EmailId, @DOB, @DepartmentID, @CityName)", con);
@@ -165,20 +165,16 @@ namespace ProjectTemplate.Controllers
         [HttpGet]
         public ActionResult GetEmpData(int Departmentid = 0)
         {
-            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);
+
             List<EmployeeData> empdata = new List<EmployeeData>();
             try
             {
-                SqlCommand getData = new SqlCommand("select Employee.FirstName, Employee.LastName, Employee.Address, Employee.MobileNo, Employee.EmailId, Employee.DateOfBirth, Department.DepartmentName, Employee.CityName from Department inner join Employee on Employee.DepartmentID = Department.DepartmentID Where Department.DepartmentID=@Departmentid or @Departmentid=0;", con);
-                getData.CommandType = CommandType.Text;
-                SqlDataAdapter da = new SqlDataAdapter();
-                getData.Parameters.AddWithValue("Departmentid", Departmentid);
-                da.SelectCommand = getData;
-                con.Open();
-                DataTable empdt = new DataTable();
-                da.Fill(empdt);
-                con.Close();
-
+                string query = "select Employee.FirstName, Employee.LastName, Employee.Address, Employee.MobileNo, Employee.EmailId, Employee.DateOfBirth, Department.DepartmentName, Employee.CityName from Department inner join Employee on Employee.DepartmentID = Department.DepartmentID Where Department.DepartmentID=@Departmentid or @Departmentid=0;";
+                DbLayer db = new DbLayer();
+                SqlParameter[] param = {
+                    new SqlParameter("@Departmentid", Departmentid)
+                };
+                DataTable empdt = db.GetData(query, param);
                 if (empdt != null && empdt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in empdt.Rows)
@@ -195,22 +191,16 @@ namespace ProjectTemplate.Controllers
                         empdata.Add(loadedData);
                     }
                 }
-                con.Open();
-                getData.ExecuteNonQuery();
-                con.Close();
             }
             catch (Exception ex)
             {
-                if (con.State == ConnectionState.Open)
-                {
-                    con.Close();
-                }
+
             }
             return PartialView("~/views/Home/partialview/Employee.cshtml", empdata);
         }
         [HttpGet]
         public ActionResult getdep()
-        {           
+        {
             List<Department> dep = new List<Department>();
             try
             {
@@ -226,18 +216,18 @@ namespace ProjectTemplate.Controllers
                         loadedData.DepartmentName = Convert.ToString(dr["DepartmentName"]);
                         dep.Add(loadedData);
                     };
-                };              
+                };
             }
             catch (Exception ex)
             {
-               
+
             };
             return PartialView("~/Views/Home/partialView/Department.cshtml", dep);
         }
         [HttpGet]
         public ActionResult loadState()
         {
-            
+
             List<State> state = new List<State>();
             try
             {
@@ -254,40 +244,36 @@ namespace ProjectTemplate.Controllers
                         state.Add(loadedState);
                     };
                 };
-               
+
             }
             catch (Exception ex)
             {
-               
+
             };
             return PartialView("~/Views/Home/partialView/State.cshtml", state);
         }
         [HttpGet]
-        public ActionResult LoadCities(int stateId = 0, string order="")
+        public ActionResult LoadCities(int stateId = 0, string order = "")
         {
-            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);
             List<City> loadcities = new List<City>();
             try
             {
                 string sqlQuery = "SELECT Cities.CityId, Cities.CityName, States.StateName FROM States INNER JOIN Cities on Cities.StateId = States.StateId Where Cities.StateId = @stateId or @stateId=0; ";
                 if (order == "asc")
                 {
-                     sqlQuery = "SELECT Cities.CityId, Cities.CityName, States.StateName FROM States INNER JOIN Cities on Cities.StateId = States.StateId Where Cities.StateId = @stateId or @stateId=0 order by CityName asc; ";
+                    sqlQuery = "SELECT Cities.CityId, Cities.CityName, States.StateName FROM States INNER JOIN Cities on Cities.StateId = States.StateId Where Cities.StateId = @stateId or @stateId=0 order by CityName asc; ";
                 }
                 if (order == "desc")
                 {
                     sqlQuery = "SELECT Cities.CityId, Cities.CityName, States.StateName FROM States INNER JOIN Cities on Cities.StateId = States.StateId Where Cities.StateId = @stateId or @stateId=0 order by CityName desc; ";
                 }
-                SqlCommand getData = new SqlCommand(sqlQuery, con);
-                getData.CommandType = CommandType.Text;
-                SqlDataAdapter da = new SqlDataAdapter();
-                getData.Parameters.AddWithValue("@stateId", stateId);
-                da.SelectCommand = getData;
-                con.Open();
-                DataTable depdt = new DataTable();
-                da.Fill(depdt);
-                con.Close();
+                DbLayer db = new DbLayer();
+                SqlParameter[] param =
+                    {
+                    new SqlParameter("@stateId", stateId),
 
+                    };
+                DataTable depdt = db.GetData(sqlQuery, param);
                 if (depdt != null && depdt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in depdt.Rows)
@@ -298,17 +284,11 @@ namespace ProjectTemplate.Controllers
                         loadedCities.StateName = Convert.ToString(dr["StateName"]);
                         loadcities.Add(loadedCities);
                     };
-                };
-                con.Open();
-                getData.ExecuteNonQuery();
-                con.Close();
+                }                
             }
             catch (Exception ex)
             {
-                if (con.State == ConnectionState.Open)
-                {
-                    con.Close();
-                };
+                
             };
             return PartialView("~/Views/Home/partialView/Cities.cshtml", loadcities);
         }
@@ -353,7 +333,7 @@ namespace ProjectTemplate.Controllers
         }
         [HttpGet]
         public ActionResult getdepfromemp()
-        {          
+        {
             List<EmployeeData> depdata = new List<EmployeeData>();
             try
             {
@@ -364,24 +344,24 @@ namespace ProjectTemplate.Controllers
                 {
                     foreach (DataRow dr in empdt.Rows)
                     {
-                        EmployeeData loadedData = new EmployeeData();                        
+                        EmployeeData loadedData = new EmployeeData();
                         loadedData.DepartmentID = Convert.ToInt32(dr["DepartmentID"]);
                         loadedData.DepartmentName = Convert.ToString(dr["DepartmentName"]);
 
                         depdata.Add(loadedData);
                     }
-                }                
+                }
             }
             catch (Exception ex)
             {
-               
+
             }
             return Json(depdata, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
         public ActionResult getcitiesfromemp()
         {
-            
+
             List<City> citydata = new List<City>();
             try
             {
@@ -398,11 +378,11 @@ namespace ProjectTemplate.Controllers
 
                         citydata.Add(loadedData);
                     }
-                }                
+                }
             }
             catch (Exception ex)
             {
-                
+
             }
             return Json(citydata, JsonRequestBehavior.AllowGet);
         }
