@@ -1,0 +1,140 @@
+﻿
+@{
+    ViewBag.Title = "City";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Cities</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="#">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            Cities
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 id="statename">State Name</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn-group btn-group-vertical container-fluid" id="divState">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="d-flex justify-content-between">City Data<select class="btn btn-dark justify-content-between" name="selectorder">
+                                <option class="btn btn-dark btn-primary" value="">order</option>
+                                <option class="btn btn-dark btn-primary" value="asc">Asc</option>
+                                <option class="btn btn-dark btn-primary" value="desc">Desc</option>
+                                </select><button type="button" class="btn btn-primary justify-content-between" id="addCitybtn">Add City</button>
+                            </h3>
+                        </div>
+                        <div id="cityGrid">
+
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="CityForm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add City</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <section>
+                    <div class="form-group">
+                        <select id='State' class="form-control" name="statename">
+                            
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="inputEmail4" placeholder="City Name" name="cityname">
+                    </div>
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-primary" id="subCitybtn">Add</button>
+                    </div>
+
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var getcities = function (stateId = 0, order = "") {
+        $.get('/Home/LoadCities', { stateId: stateId, order: order}).done(function (result) {
+            $('#cityGrid').html(result);
+        });
+    };
+
+    var bindStatesDdl = function () {       
+        $.get('/Home/loadStateforcities').done(function (result) {
+            $('#State').empty();            
+            for (i = 0; i < result.length; i++) {             
+                $('#State').append('<option value="' + result[i].StateId + '">' + result[i].StateName + '</option>');
+            };
+        });
+    };
+    
+    var GetStates = function () {     
+        $('#divState').empty();
+        $('#divState').append('<span class="btn btn-success btn-block" onclick="getcities()">All</span>');              
+        $.get('/Home/loadStateforcities').done(function (result) {
+            for (i = 0; i < result.length; i++) {
+                $('#divState').append('<span class="btn btn-primary btn-block" onclick="getcities(' + result[i].StateId + ')">' + result[i].StateName + '</span>');               
+            };
+        });
+    };
+
+    $(document).ready(function () {
+        getcities();
+        GetStates();
+        $('#addCitybtn').click(function () {
+            bindStatesDdl();
+            $('#CityForm').slideToggle(300).modal('show');
+        });
+        $('body').on('click', '#subCitybtn', function () {           
+            var postCity = {
+                CityName: $('[name="cityname"]').val(),
+                StateName: $('[name="statename"]').val()
+            }
+            $.post('/Home/SetCity', postCity).done(function (result) {
+                getcities();
+            });
+            $('#CityForm').modal('hide');
+        });
+        $('[name="selectorder"]').change(function () {
+            let order = $(this).val();
+            getcities(0, order);
+        });
+    });
+</script>

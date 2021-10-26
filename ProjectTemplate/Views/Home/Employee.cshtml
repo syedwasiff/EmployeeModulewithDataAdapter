@@ -1,0 +1,201 @@
+﻿
+@{
+    ViewBag.Title = "Employee";
+}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Employee Data</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="#">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            Employee Data
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Department</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="btn btn-block btn-group-vertical" id="DivDep">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="container-fluid">
+                                <div class="row mb-2">
+                                    <div class="col-sm-4">
+                                        <h3>Employee Data</h3>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div class="input-group rounded">
+                                            <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" id="tableInfo"/>
+                                            <span class="btn btn-dark ml-1">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4 float-sm-left">
+                                        <button type="button" class="btn btn-primary float-right" id="regForm">Register Form</button>
+                                    </div>
+                                </div>
+                            </div>                           
+                        </div>
+                        <div id="empGrid">
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Employee Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <section>                    
+                    <form class="container">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputEmail4">First Name</label>
+                                <input type="text" class="form-control" id="inputEmail4" placeholder="First Name" name="fname">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputPassword4">Last Name</label>
+                                <input type="text" class="form-control" id="inputPassword4" placeholder="Last Name" name="lname">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAddress">Address</label>
+                            <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St" name="address">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputAddress2">MobileNo</label>
+                            <input type="text" class="form-control" id="inputAddress2" placeholder="Contact Number" name="mobileno">
+                        </div>
+                        <div class="form-group">
+                            <label for="inputEmail4">Email</label>
+                            <input type="email" class="form-control" id="inputEmail4" placeholder="Email" name="email">
+                        </div>
+                    </form>
+                    <form class="container">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="inputEmail4">Date Of Birth</label>
+                                <input type="date" class="form-control" id="inputEmail4" placeholder="Date Of Birth" name="dob">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Department Name</label>
+                                <select id="departmentName" class="form-control" name="departmentname"></select>
+
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>City Name</label>
+                                <select id="CityName" class="form-control" name="cityname"></select>
+                            </div>                           
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="subBtn">Submit</button>
+                    </form>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var loadEmpData = function (Departmentid = 0) {
+        $.get('/Home/GetEmpData', { Departmentid: Departmentid}).done(function (result) {
+            $('#empGrid').html(result)
+        });
+    };
+    var SubDep = function () {
+        $.get('/Home/getdepfromemp').done(function (result) {
+
+            for (i = 0; i < result.length; i++) {
+                $('#departmentName').append('<option value="' + result[i].DepartmentID + '">' + result[i].DepartmentName + '</option>');
+            };
+        });
+    };
+    var SetCity = function () {
+        $.get('/Home/getcitiesfromemp').done(function (result) {
+            for (i = 0; i < result.length; i++) {
+                $('#CityName').append('<option value="' + result[i].CityName + '">' + result[i].CityName + '</option>');
+            };
+        });
+    };
+    var loaddep = function () {
+        $.get('/Home/getdepfromemp').done(function (result) {
+            $('#DivDep').append('<span class="btn btn-dark" onclick="loadEmpData()">All Department </span>');
+            for (i = 0; i < result.length; i++) {
+                $('#DivDep').append('<span class="btn btn-primary" onclick="loadEmpData(' + result[i].DepartmentID + ')">' + result[i].DepartmentName + '</span>');
+            };
+        });
+    };    
+    $(document).ready(function () {       
+        loadEmpData();
+        loaddep();
+        $('#subBtn').click(function () {
+            var empDetail =
+            {
+                FirstName: $('[name="fname"]').val(),
+                LastName: $('[name="lname"]').val(),
+                Address: $('[name="address"]').val(),
+                MobileNo: $('[name="mobileno"]').val(),
+                EmailId: $('[name="email"]').val(),
+                DateOfBirth: $('[name="dob"]').val(),
+                DepartmentID: $('[name="departmentname"]').val(),
+                CityName: $('[name="cityname"]').val()
+            };          
+            $.post('/Home/EmpData', empDetail).done(function (result) {
+                alert('Success');
+            }).fail(function (result) {
+                alert('Failed')
+            });
+        });
+        $('#regForm').click(function () {
+            $('#departmentName').empty();
+            $('#CityName').empty();
+            SubDep();
+            SetCity();
+            $('.modal').slideToggle(300).modal('show');
+        });
+        $("#tableInfo").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("tbody tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+

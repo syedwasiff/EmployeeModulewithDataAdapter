@@ -1,0 +1,96 @@
+﻿
+@{
+    ViewBag.Title = "DepartmentPage";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Department</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="#">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            Department
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Department Data<button type="button" class="btn btn-primary float-right" id="adddep">Add Department</button></h3>
+                        </div>
+                        <div id="depgrid">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="DepForm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Department</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <section>                   
+                    <form class="container">                        
+                        <input type="text" class="form-control" id="inputEmail4" placeholder="Department Name" name="depname">
+                        <div class="mt-1 float-right">
+                            <button type="submit" class="btn btn-primary" id="subDepbtn">Add</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var GetDep = function () {
+        $.get('/Home/getdep').done(function (result) {
+            $('#depgrid').html(result)
+        });
+    };
+    $(document).ready(function () {
+        GetDep();
+        $('#subDepartment').unbind().click(function () {
+            var departmentname = {
+                DepartmentName: $('[name="departmentname"]').val()
+            };          
+        });
+        $('body').on('click', '#adddep', function () {
+            $('#DepForm').slideToggle(300).modal('show');
+        });
+        $('#subDepbtn').click(function (result) {
+            var getdep = {
+                DepartmentName: $('[name="depname"]').val()
+            };
+            $.post('/Home/SubDep', getdep).done(function (result) {                
+                GetDep();
+            }).fail(function (result) {
+                alert('Failed');
+            });
+        });        
+    });
+</script>
+

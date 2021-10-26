@@ -1,0 +1,30 @@
+﻿@model IEnumerable<ProjectTemplate.Models.City>
+@{
+    ViewBag.Title = "Cities";
+}
+
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>CityId</th>
+            <th>CityName</th>
+            <th>StateName</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            int i = 0;
+            foreach (var item in Model)
+            {
+                i++;
+                <tr>
+                    <td>@item.CityId</td>
+                    <td>@item.CityName</td>
+                    <td>@item.StateName</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+

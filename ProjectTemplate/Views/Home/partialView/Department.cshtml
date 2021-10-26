@@ -1,0 +1,27 @@
+﻿@model IEnumerable<ProjectTemplate.Models.Department>
+@{
+    ViewBag.Title = "Department";
+}
+
+<table class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>DepartmentId</th>
+            <th>Department Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            int i =0;
+            foreach(var item in Model)
+            {
+                i++;
+                    <tr>
+                        <td>@item.DepartmentID</td>
+                        <td>@item.DepartmentName</td>
+                    </tr>
+            }
+        }
+    </tbody>
+</table>

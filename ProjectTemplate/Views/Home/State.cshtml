@@ -1,0 +1,88 @@
+﻿
+@{
+    ViewBag.Title = "State";
+}
+
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>State</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">
+                            <a href="#">Home</a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            State
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>State Data<button type="button" class="btn btn-primary float-right" id="addStatebtn">Add State</button></h3>
+                        </div>
+                        <div id="stategrid">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div class="modal" tabindex="-1" role="dialog" id="StateForm">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add State</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <section>
+                    <form class="container">
+                        <input type="text" class="form-control" id="inputEmail4" placeholder="State Name" name="statename">
+                        <div class="mt-1 float-right">
+                            <button type="submit" class="btn btn-primary" id="subStatebtn">Add</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var loadState = function () {
+        $.get('/Home/loadState').done(function (result) {
+            $('#stategrid').html(result)
+        });
+    };
+    $(document).ready(function () {
+        loadState();
+        $('#addStatebtn').click(function () {
+            $('#StateForm').slideToggle(300).modal('show');
+        });
+        $('#subStatebtn').click(function () {
+            var SetState = { StateName: $('[name="statename"]').val() }
+            $.post('/Home/setState', SetState).done(function (result) {
+                loadState();
+            });
+        });
+    });
+
+</script>
+

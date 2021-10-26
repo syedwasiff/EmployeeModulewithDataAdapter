@@ -1,0 +1,20 @@
+﻿@model IEnumerable<ProjectTemplate.Models.State>
+@{
+    ViewBag.Title = "StateinCities";
+}
+
+<div class="card-body">
+    <div class="btn-group btn-group-vertical container-fluid" id="divState">
+        @if (Model.Any())
+        {
+            int i = 0;
+            foreach(var item in Model)
+            {
+                i++;
+                <ol>
+                    <li>@item.StateName</li>                    
+                </ol>
+            }
+        }
+    </div>
+</div>
