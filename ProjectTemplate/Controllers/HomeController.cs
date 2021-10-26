@@ -1,4 +1,5 @@
-﻿using ProjectTemplate.Models;
+﻿using ProjectTemplate.AppCode;
+using ProjectTemplate.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -209,20 +210,13 @@ namespace ProjectTemplate.Controllers
         }
         [HttpGet]
         public ActionResult getdep()
-        {
-            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);
+        {           
             List<Department> dep = new List<Department>();
             try
             {
-                SqlCommand getData = new SqlCommand("select * from Department", con);
-                getData.CommandType = CommandType.Text;
-                SqlDataAdapter da = new SqlDataAdapter();
-                da.SelectCommand = getData;
-                con.Open();
-                DataTable depdt = new DataTable();
-                da.Fill(depdt);
-                con.Close();
-
+                string query = "select * from Department";
+                DbLayer db = new DbLayer();
+                DataTable depdt = db.GetData(query);
                 if (depdt != null && depdt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in depdt.Rows)
@@ -232,36 +226,24 @@ namespace ProjectTemplate.Controllers
                         loadedData.DepartmentName = Convert.ToString(dr["DepartmentName"]);
                         dep.Add(loadedData);
                     };
-                };
-                con.Open();
-                getData.ExecuteNonQuery();
-                con.Close();
+                };              
             }
             catch (Exception ex)
             {
-                if (con.State == ConnectionState.Open)
-                {
-                    con.Close();
-                };
+               
             };
             return PartialView("~/Views/Home/partialView/Department.cshtml", dep);
         }
         [HttpGet]
         public ActionResult loadState()
         {
-            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);
+            
             List<State> state = new List<State>();
             try
             {
-                SqlCommand getData = new SqlCommand("select * from States", con);
-                getData.CommandType = CommandType.Text;
-                SqlDataAdapter da = new SqlDataAdapter();
-                da.SelectCommand = getData;
-                con.Open();
-                DataTable depdt = new DataTable();
-                da.Fill(depdt);
-                con.Close();
-
+                string query = "select * from States";
+                DbLayer db = new DbLayer();
+                DataTable depdt = db.GetData(query);
                 if (depdt != null && depdt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in depdt.Rows)
@@ -272,16 +254,11 @@ namespace ProjectTemplate.Controllers
                         state.Add(loadedState);
                     };
                 };
-                con.Open();
-                getData.ExecuteNonQuery();
-                con.Close();
+               
             }
             catch (Exception ex)
             {
-                if (con.State == ConnectionState.Open)
-                {
-                    con.Close();
-                };
+               
             };
             return PartialView("~/Views/Home/partialView/State.cshtml", state);
         }
@@ -376,20 +353,13 @@ namespace ProjectTemplate.Controllers
         }
         [HttpGet]
         public ActionResult getdepfromemp()
-        {
-            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);
+        {          
             List<EmployeeData> depdata = new List<EmployeeData>();
             try
             {
-                SqlCommand getData = new SqlCommand("select * from Department", con);
-                getData.CommandType = CommandType.Text;
-                SqlDataAdapter da = new SqlDataAdapter();
-                da.SelectCommand = getData;
-                con.Open();
-                DataTable empdt = new DataTable();
-                da.Fill(empdt);
-                con.Close();
-
+                string query = "select * from Department";
+                DbLayer db = new DbLayer();
+                DataTable empdt = db.GetData(query);
                 if (empdt != null && empdt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in empdt.Rows)
@@ -400,36 +370,24 @@ namespace ProjectTemplate.Controllers
 
                         depdata.Add(loadedData);
                     }
-                }
-                con.Open();
-                getData.ExecuteNonQuery();
-                con.Close();
+                }                
             }
             catch (Exception ex)
             {
-                if (con.State == ConnectionState.Open)
-                {
-                    con.Close();
-                }
+               
             }
             return Json(depdata, JsonRequestBehavior.AllowGet);
         }
         [HttpGet]
         public ActionResult getcitiesfromemp()
         {
-            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);
+            
             List<City> citydata = new List<City>();
             try
             {
-                SqlCommand getData = new SqlCommand("select * from Cities order by CityName asc", con);
-                getData.CommandType = CommandType.Text;
-                SqlDataAdapter da = new SqlDataAdapter();
-                da.SelectCommand = getData;
-                con.Open();
-                DataTable empdt = new DataTable();
-                da.Fill(empdt);
-                con.Close();
-
+                string query = "select * from Cities order by CityName asc";
+                DbLayer db = new DbLayer();
+                DataTable empdt = db.GetData(query);
                 if (empdt != null && empdt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in empdt.Rows)
@@ -440,20 +398,13 @@ namespace ProjectTemplate.Controllers
 
                         citydata.Add(loadedData);
                     }
-                }
-                con.Open();
-                getData.ExecuteNonQuery();
-                con.Close();
+                }                
             }
             catch (Exception ex)
             {
-                if (con.State == ConnectionState.Open)
-                {
-                    con.Close();
-                }
+                
             }
             return Json(citydata, JsonRequestBehavior.AllowGet);
-        }       
-
+        }
     };
 };
