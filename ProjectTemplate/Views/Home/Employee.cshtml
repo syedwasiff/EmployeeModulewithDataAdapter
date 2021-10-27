@@ -28,12 +28,14 @@
                 <div class="col-md-3">
                     <div class="card">
                         <div class="card-header">
-                            <h3>Department</h3>
+                            <h3>Filters</h3>
                         </div>
-                        <div class="card-body">
-                            <div class="btn btn-block btn-group-vertical" id="DivDep">
+                        <div class="btn btn-block btn-group-vertical" id="DivDep">
 
-                            </div>
+                        </div>
+                        <hr />
+                        <div class="btn btn-block btn-group-vertical" id="DivState">
+
                         </div>
                     </div>
                 </div>
@@ -47,7 +49,7 @@
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="input-group rounded">
-                                            <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" id="tableInfo"/>
+                                            <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" id="tableInfo" />
                                             <span class="btn btn-dark ml-1">
                                                 <i class="fas fa-search"></i>
                                             </span>
@@ -57,7 +59,7 @@
                                         <button type="button" class="btn btn-primary float-right" id="regForm">Register Form</button>
                                     </div>
                                 </div>
-                            </div>                           
+                            </div>
                         </div>
                         <div id="empGrid">
 
@@ -79,7 +81,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <section>                    
+                <section>
                     <form class="container">
                         <div class="form-row">
                             <div class="form-group col-md-6">
@@ -120,7 +122,11 @@
                             <div class="form-group col-md-6">
                                 <label>City Name</label>
                                 <select id="CityName" class="form-control" name="cityname"></select>
-                            </div>                           
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>State Name</label>
+                                <select id="StateName" class="form-control" name="statename"></select>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary" id="subBtn">Submit</button>
                     </form>
@@ -134,8 +140,8 @@
 </div>
 
 <script>
-    var loadEmpData = function (Departmentid = 0) {
-        $.get('/Home/GetEmpData', { Departmentid: Departmentid}).done(function (result) {
+    var loadEmpData = function (Departmentid = 0, Stateid = 0) {
+        $.get('/Home/GetEmpData', { Departmentid: Departmentid, Stateid: Stateid }).done(function (result) {
             $('#empGrid').html(result)
         });
     };
@@ -150,7 +156,22 @@
     var SetCity = function () {
         $.get('/Home/getcitiesfromemp').done(function (result) {
             for (i = 0; i < result.length; i++) {
-                $('#CityName').append('<option value="' + result[i].CityName + '">' + result[i].CityName + '</option>');
+                $('#CityName').append('<option value="' + result[i].CityId + '">' + result[i].CityName + '</option>');
+            };
+        });
+    };
+    var SetState = function () {
+        $.get('/Home/loadStateforcities').done(function (result) {
+            for (i = 0; i < result.length; i++) {
+                $('#StateName').append('<option value="' + result[i].StateId + '">' + result[i].StateName + '</option>');
+            };
+        });
+    };
+    var loadState = function () {
+        $.get('/Home/loadStateforcities').done(function (result) {
+            $('#DivState').append('<span class="btn btn-primary btn-dark" onclick="loadEmpData()">All States</span>');
+            for (i = 0; i < result.length; i++) {
+                $('#DivState').append('<span class="btn btn-primary state text-nowrap" data-state-Id="' + result[i].StateId + '"><input type="checkbox" class="filter"/><label>' + result[i].StateName + '</label></span>');
             };
         });
     };
@@ -158,13 +179,14 @@
         $.get('/Home/getdepfromemp').done(function (result) {
             $('#DivDep').append('<span class="btn btn-dark" onclick="loadEmpData()">All Department </span>');
             for (i = 0; i < result.length; i++) {
-                $('#DivDep').append('<span class="btn btn-primary" onclick="loadEmpData(' + result[i].DepartmentID + ')">' + result[i].DepartmentName + '</span>');
+                $('#DivDep').append('<span class="btn btn-primary department text-nowrap" data-dep-id="' + result[i].DepartmentID + '"><input type="checkbox" class="filter" /><label>' + result[i].DepartmentName + '</label></span>');
             };
         });
-    };    
-    $(document).ready(function () {       
+    };
+    $(document).ready(function () {
         loadEmpData();
         loaddep();
+        loadState();
         $('#subBtn').click(function () {
             var empDetail =
             {
@@ -175,8 +197,8 @@
                 EmailId: $('[name="email"]').val(),
                 DateOfBirth: $('[name="dob"]').val(),
                 DepartmentID: $('[name="departmentname"]').val(),
-                CityName: $('[name="cityname"]').val()
-            };          
+                CityID: $('[name="cityname"]').val()
+            };
             $.post('/Home/EmpData', empDetail).done(function (result) {
                 alert('Success');
             }).fail(function (result) {
@@ -186,8 +208,10 @@
         $('#regForm').click(function () {
             $('#departmentName').empty();
             $('#CityName').empty();
+            $('#StateName').empty();
             SubDep();
             SetCity();
+            SetState();
             $('.modal').slideToggle(300).modal('show');
         });
         $("#tableInfo").on("keyup", function () {
@@ -196,6 +220,21 @@
                 $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
         });
+        $('body').on('click', '.filter', function () {
+            let stateId = '';
+            let depId = '';
+            $('.filter:checked').each(function () {
+                let parentSpan = $(this).closest('span');
+                if (parentSpan.hasClass('department')) {
+                    depId = parentSpan.data().depId;
+                }
+                if (parentSpan.hasClass('state')) {
+                    stateId = parentSpan.data().stateId;
+                }
+            })
+            console.log(depId, stateId);
+            loadEmpData(depId, stateId);
+        })
     });
 </script>
 

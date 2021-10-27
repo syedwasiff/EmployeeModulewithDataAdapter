@@ -135,7 +135,7 @@ namespace ProjectTemplate.Controllers
             SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);
             try
             {
-                SqlCommand cmd = new SqlCommand("insert into Employee values(@FirstName, @LastName, @Address, @MobileNo, @EmailId, @DOB, @DepartmentID, @CityName)", con);
+                SqlCommand cmd = new SqlCommand("insert into Employee values(@FirstName, @LastName, @Address, @MobileNo, @EmailId, @DOB, @DepartmentID, @CityId)", con);
                 cmd.CommandType = CommandType.Text;
                 cmd.Parameters.AddWithValue("@FirstName", empDetail.FirstName);
                 cmd.Parameters.AddWithValue("@LastName", empDetail.LastName);
@@ -144,7 +144,7 @@ namespace ProjectTemplate.Controllers
                 cmd.Parameters.AddWithValue("@EmailId", empDetail.EmailId);
                 cmd.Parameters.AddWithValue("@DOB", empDetail.DateOfBirth);
                 cmd.Parameters.AddWithValue("@DepartmentID", empDetail.DepartmentID);
-                cmd.Parameters.AddWithValue("@CityName", empDetail.CityName);
+                cmd.Parameters.AddWithValue("@CityId", empDetail.CityId);
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
@@ -163,16 +163,17 @@ namespace ProjectTemplate.Controllers
 
         }
         [HttpGet]
-        public ActionResult GetEmpData(int Departmentid = 0)
+        public ActionResult GetEmpData(int Departmentid = 0, int Stateid = 0)
         {
 
             List<EmployeeData> empdata = new List<EmployeeData>();
             try
             {
-                string query = "select Employee.FirstName, Employee.LastName, Employee.Address, Employee.MobileNo, Employee.EmailId, Employee.DateOfBirth, Department.DepartmentName, Employee.CityName from Department inner join Employee on Employee.DepartmentID = Department.DepartmentID Where Department.DepartmentID=@Departmentid or @Departmentid=0;";
+                string query = "select E.EmployeeId, E.FirstName, E.LastName, E.Address, E.MobileNo, E.EmailId, E.DateOfBirth, D.DepartmentName, C.CityName, S.StateName from Employee E inner join Department D on D.DepartmentID = E.DepartmentID inner join Cities C on E.CityID = C.CityId inner join States S on S.StateId = C.StateId Where (E.DepartmentID = @Departmentid or @Departmentid = 0) and (S.StateId = @Stateid or @Stateid=0); ";
                 DbLayer db = new DbLayer();
                 SqlParameter[] param = {
-                    new SqlParameter("@Departmentid", Departmentid)
+                    new SqlParameter("@Departmentid", Departmentid),
+                    new SqlParameter("@Stateid", Stateid)
                 };
                 DataTable empdt = db.GetData(query, param);
                 if (empdt != null && empdt.Rows.Count > 0)
@@ -188,6 +189,7 @@ namespace ProjectTemplate.Controllers
                         loadedData.DateOfBirth = Convert.ToString(dr["DateOFBirth"]);
                         loadedData.DepartmentName = Convert.ToString(dr["DepartmentName"]);
                         loadedData.CityName = Convert.ToString(dr["CityName"]);
+                        loadedData.StateName = Convert.ToString(dr["StateName"]);
                         empdata.Add(loadedData);
                     }
                 }
@@ -284,11 +286,11 @@ namespace ProjectTemplate.Controllers
                         loadedCities.StateName = Convert.ToString(dr["StateName"]);
                         loadcities.Add(loadedCities);
                     };
-                }                
+                }
             }
             catch (Exception ex)
             {
-                
+
             };
             return PartialView("~/Views/Home/partialView/Cities.cshtml", loadcities);
         }
@@ -299,7 +301,7 @@ namespace ProjectTemplate.Controllers
             List<State> stateforcities = new List<State>();
             try
             {
-                SqlCommand getData = new SqlCommand("select * from States order by StateName asc;", con);
+                SqlCommand getData = new SqlCommand("select * from States;", con);
                 getData.CommandType = CommandType.Text;
                 SqlDataAdapter da = new SqlDataAdapter();
                 da.SelectCommand = getData;
