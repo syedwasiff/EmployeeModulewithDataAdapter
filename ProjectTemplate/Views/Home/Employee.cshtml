@@ -236,8 +236,13 @@
             loadEmpData(depId, stateId);
         })
         $('body').on('click', '.delBtn', function () {
-
-
+            var delData =
+            {
+                EmployeeId: $(this).closest('tr').data().empId
+            }
+            $.post('/Home/DelData', delData).done(function () {
+                loadEmpData();
+            })
         })
     });
 </script>

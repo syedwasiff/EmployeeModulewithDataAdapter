@@ -190,6 +190,7 @@ namespace ProjectTemplate.Controllers
                         loadedData.DepartmentName = Convert.ToString(dr["DepartmentName"]);
                         loadedData.CityName = Convert.ToString(dr["CityName"]);
                         loadedData.StateName = Convert.ToString(dr["StateName"]);
+                        loadedData.EmployeeId = Convert.ToInt32(dr["EmployeeId"]);
                         empdata.Add(loadedData);
                     }
                 }
@@ -387,6 +388,30 @@ namespace ProjectTemplate.Controllers
 
             }
             return Json(citydata, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public ActionResult DelData(EmployeeData delData)
+        {
+            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);
+            int i = 0;
+            try
+            {
+                SqlCommand cmd = new SqlCommand("delete from Employee where EmployeeId= @EmployeeId", con);
+                cmd.CommandType = CommandType.Text;
+                cmd.Parameters.AddWithValue("@EmployeeId", delData.EmployeeId);
+                con.Open();
+                i = cmd.ExecuteNonQuery();
+                con.Close();
+
+            }
+            catch (Exception ex)
+            {
+                if (con.State == ConnectionState.Open)
+                {
+                    con.Close();
+                }
+            }
+            return Json(i);
         }
     };
 };

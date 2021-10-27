@@ -10,6 +10,7 @@
 
             <th>Srno</th>
             <th>Ation</th>
+            <th>EmployeeId</th>
             <th>Name</th>
             <th>Address</th>
             <th>MobileNo</th>
@@ -28,9 +29,10 @@
             foreach (var item in Model)
             {
                 i++;
-        <tr>
+        <tr data-emp-Id="@item.EmployeeId">
             <td>@i</td>
             <td class="row"><a href="#" class="btn btn-info btn-sm editBtn col-sm-6"><i class="fas fa-pen"></i></a><a href="#" class="btn btn-danger col-sm-6 btn-sm delBtn"><i class="fas fa-times"></i></a></td>
+            <td>@item.EmployeeId</td>
             <td>@item.FirstName @item.LastName</td>
             <td>@item.Address</td>
             <td>@item.MobileNo</td>
@@ -39,7 +41,6 @@
             <td>@item.DepartmentName</td>
             <td>@item.CityName</td>
             <td>@item.StateName</td>
-
         </tr>
             }
         }        
