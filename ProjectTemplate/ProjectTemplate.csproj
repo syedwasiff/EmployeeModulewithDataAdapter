@@ -2205,6 +2205,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\DbLayer\" />
     <Folder Include="Views\EmployeeData\" />
     <Folder Include="Views\Skill\" />
     <Folder Include="Views\State\" />

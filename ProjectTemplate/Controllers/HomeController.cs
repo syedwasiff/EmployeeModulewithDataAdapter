@@ -173,7 +173,7 @@ namespace ProjectTemplate.Controllers
                 DbLayer db = new DbLayer();
                 SqlParameter[] param = {
                     new SqlParameter("@Departmentid", Departmentid),
-                    new SqlParameter("@Stateid", Stateid)
+                    new SqlParameter("@Stateid", Stateid)                    
                 };
                 DataTable empdt = db.GetData(query, param);
                 if (empdt != null && empdt.Rows.Count > 0)
@@ -413,5 +413,47 @@ namespace ProjectTemplate.Controllers
             }
             return Json(i);
         }
+        [HttpGet]
+        public ActionResult EditEmpData(int Employeeid)
+        {
+            EmployeeData loadedData = new EmployeeData();
+            try
+            {
+                string query = "select E.EmployeeId, E.FirstName, E.LastName, E.Address, E.MobileNo, E.EmailId, E.DateOfBirth, D.DepartmentName, C.CityName, S.StateName from Employee E inner join Department D on D.DepartmentID = E.DepartmentID inner join Cities C on E.CityID = C.CityId inner join States S on S.StateId = C.StateId Where E.EmployeeId=@Employeeid ";
+                DbLayer db = new DbLayer();
+                SqlParameter[] param =
+                {
+                   new SqlParameter("@Employeeid", Employeeid),
+                };
+                DataTable empdt = db.GetData(query,param);
+                if (empdt != null && empdt.Rows.Count > 0)
+                {
+                    foreach (DataRow dr in empdt.Rows)
+                    {
+                        
+                        loadedData.FirstName = Convert.ToString(dr["FirstName"]);
+                        loadedData.LastName = Convert.ToString(dr["LastName"]);
+                        loadedData.Address = Convert.ToString(dr["Address"]);
+                        loadedData.MobileNo = Convert.ToString(dr["MobileNo"]);
+                        loadedData.EmailId = Convert.ToString(dr["EmailId"]);
+                        loadedData.DateOfBirth = Convert.ToString(dr["DateOFBirth"]);
+                        loadedData.DepartmentName = Convert.ToString(dr["DepartmentName"]);
+                        loadedData.DepartmentID = Convert.ToInt32(dr["DepartmentID"]);
+                        loadedData.CityName = Convert.ToString(dr["CityName"]);
+                        loadedData.CityId = Convert.ToInt32(dr["CityId"]);
+                        loadedData.StateName = Convert.ToString(dr["StateName"]);
+                        loadedData.StateId = Convert.ToInt32(dr["StateId"]);
+                        loadedData.EmployeeId = Convert.ToInt32(dr["EmployeeId"]);
+                      
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return Json(loadedData, JsonRequestBehavior.AllowGet);
+        }
+
     };
 };

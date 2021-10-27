@@ -81,36 +81,36 @@
                 </button>
             </div>
             <div class="modal-body">
-                <section>
+                <section id="editForm">
                     <form class="container">
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="inputEmail4">First Name</label>
-                                <input type="text" class="form-control" id="inputEmail4" placeholder="First Name" name="fname">
+                                <input type="text" class="form-control" id="fname" placeholder="First Name" name="fname">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="inputPassword4">Last Name</label>
-                                <input type="text" class="form-control" id="inputPassword4" placeholder="Last Name" name="lname">
+                                <input type="text" class="form-control" id="lname" placeholder="Last Name" name="lname">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="inputAddress">Address</label>
-                            <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St" name="address">
+                            <input type="text" class="form-control" id="address" placeholder="1234 Main St" name="address">
                         </div>
                         <div class="form-group">
                             <label for="inputAddress2">MobileNo</label>
-                            <input type="text" class="form-control" id="inputAddress2" placeholder="Contact Number" name="mobileno">
+                            <input type="text" class="form-control" id="mobileno" placeholder="Contact Number" name="mobileno">
                         </div>
                         <div class="form-group">
                             <label for="inputEmail4">Email</label>
-                            <input type="email" class="form-control" id="inputEmail4" placeholder="Email" name="email">
+                            <input type="email" class="form-control" id="emailid" placeholder="Email" name="email">
                         </div>
                     </form>
                     <form class="container">
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="inputEmail4">Date Of Birth</label>
-                                <input type="date" class="form-control" id="inputEmail4" placeholder="Date Of Birth" name="dob">
+                                <input type="date" class="form-control" id="dateofbirth" placeholder="Date Of Birth" name="dob">
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Department Name</label>
@@ -141,7 +141,7 @@
 
 <script>
     var loadEmpData = function (Departmentid = 0, Stateid = 0) {
-        $.get('/Home/GetEmpData', { Departmentid: Departmentid, Stateid: Stateid }).done(function (result) {
+        $.get('/Home/GetEmpData', { Departmentid: Departmentid, Stateid: Stateid}).done(function (result) {
             $('#empGrid').html(result)
         });
     };
@@ -162,6 +162,7 @@
     };
     var SetState = function () {
         $.get('/Home/loadStateforcities').done(function (result) {
+            $('#StateName').empty();
             for (i = 0; i < result.length; i++) {
                 $('#StateName').append('<option value="' + result[i].StateId + '">' + result[i].StateName + '</option>');
             };
@@ -183,6 +184,27 @@
             };
         });
     };
+    var editData = function () {
+        $('.modal').slideDown(300).modal('show');            
+    }
+    function editEmp(empId) {
+        SetState();
+        $.get('/Home/EditEmpData', { Employeeid: empId }).done(function (result) {
+            $('.modal').slideDown(300).modal();
+            $('#fname').val(result.FirstName);
+            $('#lname').val(result.LastName);
+            $('#address').val(result.Address);
+            $('#mobileno').val(result.MobileNo);
+            $('#emailid').val(result.EmailId);
+            $('#dateofbirth').val(result.DateOfBirth);
+            $('#departmentName').append('<option value="' + result.DepartmentID + '">' + result.DepartmentName + '</option>');
+            $('#cityname').append('<option value="' + result.CityId + '">' + result.CityName + '</option>')
+
+            $('#StateName').find('option[value="' + result.StateId + '"]').prop('selected', true);
+
+            console.log(result);
+        });
+    }
     $(document).ready(function () {
         loadEmpData();
         loaddep();
@@ -207,8 +229,7 @@
         });
         $('#regForm').click(function () {
             $('#departmentName').empty();
-            $('#CityName').empty();
-            $('#StateName').empty();
+          
             SubDep();
             SetCity();
             SetState();
@@ -244,6 +265,16 @@
                 loadEmpData();
             })
         })
+
+       
+
+        //$('body').on('click', '.editBtn', function () {
+        //    $('.modal').modal('show');
+        //    $
+        //    $.get('/Home/EditEmpData', { Employeeid:}).done(function (result) {
+        //        console.log(result);               
+        //    });
+        //});
     });
 </script>
 
