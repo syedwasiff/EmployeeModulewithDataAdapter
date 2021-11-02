@@ -419,13 +419,13 @@ namespace ProjectTemplate.Controllers
             EmployeeData loadedData = new EmployeeData();
             try
             {
-                string query = "select E.EmployeeId, E.FirstName, E.LastName, E.Address, E.MobileNo, E.EmailId, E.DateOfBirth, D.DepartmentName, C.CityName, S.StateName from Employee E inner join Department D on D.DepartmentID = E.DepartmentID inner join Cities C on E.CityID = C.CityId inner join States S on S.StateId = C.StateId Where E.EmployeeId=@Employeeid ";
+                string query = "select E.EmployeeId, E.FirstName, E.LastName, E.Address, E.MobileNo, E.EmailId, E.DateOfBirth, D.DepartmentName, C.CityName, S.StateName from Employee E inner join Department D on D.DepartmentID = E.DepartmentID inner join Cities C on E.CityID = C.CityId inner join States S on S.StateId = C.StateId Where E.EmployeeId =@Employeeid ; ";
                 DbLayer db = new DbLayer();
                 SqlParameter[] param =
                 {
-                   new SqlParameter("@Employeeid", Employeeid),
+                   new SqlParameter("@Employeeid", Employeeid)
                 };
-                DataTable empdt = db.GetData(query,param);
+                DataTable empdt = db.GetData(query, param);
                 if (empdt != null && empdt.Rows.Count > 0)
                 {
                     foreach (DataRow dr in empdt.Rows)
@@ -440,9 +440,9 @@ namespace ProjectTemplate.Controllers
                         loadedData.DepartmentName = Convert.ToString(dr["DepartmentName"]);
                         loadedData.DepartmentID = Convert.ToInt32(dr["DepartmentID"]);
                         loadedData.CityName = Convert.ToString(dr["CityName"]);
-                        loadedData.CityId = Convert.ToInt32(dr["CityId"]);
+                        loadedData.CityID = Convert.ToInt32(dr["CityID"]);
                         loadedData.StateName = Convert.ToString(dr["StateName"]);
-                        loadedData.StateId = Convert.ToInt32(dr["StateId"]);
+                        loadedData.StateID = Convert.ToInt32(dr["StateId"]);
                         loadedData.EmployeeId = Convert.ToInt32(dr["EmployeeId"]);
                       
                     }

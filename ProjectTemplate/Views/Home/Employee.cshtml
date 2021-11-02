@@ -198,11 +198,9 @@
             $('#emailid').val(result.EmailId);
             $('#dateofbirth').val(result.DateOfBirth);
             $('#departmentName').append('<option value="' + result.DepartmentID + '">' + result.DepartmentName + '</option>');
-            $('#cityname').append('<option value="' + result.CityId + '">' + result.CityName + '</option>')
+            $('#CityName').append('<option value="' + result.CityID + '">' + result.CityName + '</option>')
 
-            $('#StateName').find('option[value="' + result.StateId + '"]').prop('selected', true);
-
-            console.log(result);
+            $('#StateName').find('option[value="' + result.StateID + '"]').prop('selected', true);
         });
     }
     $(document).ready(function () {
