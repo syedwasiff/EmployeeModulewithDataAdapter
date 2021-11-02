@@ -144,7 +144,7 @@ namespace ProjectTemplate.Controllers
                 cmd.Parameters.AddWithValue("@EmailId", empDetail.EmailId);
                 cmd.Parameters.AddWithValue("@DOB", empDetail.DateOfBirth);
                 cmd.Parameters.AddWithValue("@DepartmentID", empDetail.DepartmentID);
-                cmd.Parameters.AddWithValue("@CityId", empDetail.CityId);
+                cmd.Parameters.AddWithValue("@CityId", empDetail.CityID);
                 con.Open();
                 cmd.ExecuteNonQuery();
                 con.Close();
@@ -419,7 +419,7 @@ namespace ProjectTemplate.Controllers
             EmployeeData loadedData = new EmployeeData();
             try
             {
-                string query = "select E.EmployeeId, E.FirstName, E.LastName, E.Address, E.MobileNo, E.EmailId, E.DateOfBirth, D.DepartmentName, C.CityName, S.StateName from Employee E inner join Department D on D.DepartmentID = E.DepartmentID inner join Cities C on E.CityID = C.CityId inner join States S on S.StateId = C.StateId Where E.EmployeeId =@Employeeid ; ";
+                string query = "select E.EmployeeId, E.FirstName, E.LastName, E.Address, E.MobileNo, E.EmailId, E.DateOfBirth,D.DepartmentId, D.DepartmentName,C.CityID, C.CityName,S.StateId, S.StateName from Employee E inner join Department D on D.DepartmentID = E.DepartmentID inner join Cities C on E.CityID = C.CityId inner join States S on S.StateId = C.StateId Where E.EmployeeId =@Employeeid ; ";
                 DbLayer db = new DbLayer();
                 SqlParameter[] param =
                 {
@@ -453,6 +453,34 @@ namespace ProjectTemplate.Controllers
 
             }
             return Json(loadedData, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public ActionResult updateEmp(EmployeeData updateEmpData)
+        {
+            int i = 0;
+            try
+            {
+                string query = "UPDATE Employee SET FirstName = @FirstName, LastName = @LastName, Address = @Address, MobileNo = @MobileNo, EmailId = @EmailId, DateOfBirth = @DateOfBirth, DepartmentID = @DepartmentID, CityID = @CityID WHERE EmployeeId = @EmployeeId;";
+                DbLayer db = new DbLayer();
+                SqlParameter[] param = { 
+                new SqlParameter("@EmployeeId", updateEmpData.EmployeeId),
+                new SqlParameter("@FirstName", updateEmpData.FirstName),
+                new SqlParameter("@LastName", updateEmpData.LastName),
+                new SqlParameter("@Address", updateEmpData.Address),
+                new SqlParameter("@MobileNo", updateEmpData.MobileNo),
+                new SqlParameter("@EmailId", updateEmpData.EmailId),
+                new SqlParameter("@DateOfBirth", updateEmpData.DateOfBirth),
+                new SqlParameter("@DepartmentID", updateEmpData.DepartmentID),
+                new SqlParameter("@CityId", updateEmpData.CityID)
+                } ;
+
+                i = db.Execute(query, param);
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            return Json(i);
         }
 
     };

@@ -128,7 +128,9 @@
                                 <select id="StateName" class="form-control" name="statename"></select>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary" id="subBtn">Submit</button>
+                        <div class="btnPlace">
+                            <button type="submit" class="btn btn-primary regForm" id="subBtn">Submit</button>
+                        </div>                        
                     </form>
                 </section>
             </div>
@@ -147,7 +149,7 @@
     };
     var SubDep = function () {
         $.get('/Home/getdepfromemp').done(function (result) {
-
+            $('#departmentName').empty();
             for (i = 0; i < result.length; i++) {
                 $('#departmentName').append('<option value="' + result[i].DepartmentID + '">' + result[i].DepartmentName + '</option>');
             };
@@ -155,6 +157,7 @@
     };
     var SetCity = function () {
         $.get('/Home/getcitiesfromemp').done(function (result) {
+            $('#CityName').empty();
             for (i = 0; i < result.length; i++) {
                 $('#CityName').append('<option value="' + result[i].CityId + '">' + result[i].CityName + '</option>');
             };
@@ -183,12 +186,11 @@
                 $('#DivDep').append('<span class="btn btn-primary department text-nowrap" data-dep-id="' + result[i].DepartmentID + '"><input type="checkbox" class="filter" /><label>' + result[i].DepartmentName + '</label></span>');
             };
         });
-    };
-    var editData = function () {
-        $('.modal').slideDown(300).modal('show');            
-    }
+    };    
     function editEmp(empId) {
+        SubDep();
         SetState();
+        SetCity();
         $.get('/Home/EditEmpData', { Employeeid: empId }).done(function (result) {
             $('.modal').slideDown(300).modal();
             $('#fname').val(result.FirstName);
@@ -201,8 +203,31 @@
             $('#CityName').append('<option value="' + result.CityID + '">' + result.CityName + '</option>')
 
             $('#StateName').find('option[value="' + result.StateID + '"]').prop('selected', true);
+            $('.regForm').hide();
+            $('.btnPlace').empty();
+            $('.btnPlace').append('<button type="submit" class="btn btn-info" onclick="updateEmp('+result.EmployeeId+')" id="updateBtn">Update</button>');
         });
     }
+    function updateEmp(empId) {
+        SubDep();
+        SetState();
+        SetCity();
+        var updateEmpData =
+        {
+            EmployeeId: empId,
+            FirstName: $('[name="fname"]').val(),
+            LastName: $('[name="lname"]').val(),
+            Address: $('[name="address"]').val(),
+            MobileNo: $('[name="mobileno"]').val(),
+            EmailId: $('[name="email"]').val(),
+            DateOfBirth: $('[name="dob"]').val(),
+            DepartmentID: $('[name="departmentname"]').val(),
+            CityID: $('[name="cityname"]').val()
+        }
+        $.post('/Home/updateEmp', updateEmpData).done(function (result) {
+            alert('Success');
+        });
+    }    
     $(document).ready(function () {
         loadEmpData();
         loaddep();
@@ -218,7 +243,7 @@
                 DateOfBirth: $('[name="dob"]').val(),
                 DepartmentID: $('[name="departmentname"]').val(),
                 CityID: $('[name="cityname"]').val()
-            };
+            }
             $.post('/Home/EmpData', empDetail).done(function (result) {
                 alert('Success');
             }).fail(function (result) {
@@ -263,7 +288,7 @@
                 loadEmpData();
             })
         })
-
+        
        
 
         //$('body').on('click', '.editBtn', function () {

@@ -61,5 +61,32 @@ namespace ProjectTemplate.AppCode
             };
             return dt;
         }
+
+        public int Execute(string query, SqlParameter[] param)
+        {
+            int result = 0;
+            SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["Department"].ConnectionString);
+            try
+            {
+                SqlCommand cmd = new SqlCommand(query, con);
+                cmd.CommandType = CommandType.Text;
+                for (int i = 0; i < param.Length; i++)
+                {
+                    cmd.Parameters.Add(param[i]);
+                }
+                con.Open();
+                result = cmd.ExecuteNonQuery();
+                con.Close();
+
+            }
+            catch (Exception ex)
+            {
+                if (con.State == ConnectionState.Open)
+                {
+                    con.Close();
+                };
+            };
+            return result;
+        }
     }
 }
